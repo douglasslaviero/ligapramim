@@ -2,16 +2,19 @@ package com.example.ligapramim;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
+
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -19,6 +22,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,12 +71,13 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
             switch (direction) {
                 case ItemTouchHelper.LEFT:
+                    break;
+                case ItemTouchHelper.RIGHT:
                     deletedContact = contactsList.get(position);
                     contactsList.remove(position);
                     adapter.notifyItemRemoved(position);
@@ -83,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
                                     adapter.notifyItemInserted(position);
                                 }
                             }).show();
-                    break;
-                case ItemTouchHelper.RIGHT:
-
                     break;
             }
         }
