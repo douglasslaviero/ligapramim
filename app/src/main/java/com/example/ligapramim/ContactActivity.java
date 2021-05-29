@@ -108,15 +108,17 @@ public class ContactActivity extends AppCompatActivity {
 
     public void save(View view){
         EditText name = (EditText) findViewById(R.id.txtContactName);
+        String nameTxt = name.getText().toString();
 
-        if(name.getText().toString().trim().isEmpty()){
+        if(nameTxt.trim().isEmpty() || nameTxt.equalsIgnoreCase("Nome")){
             name.setError("Campo não pode ser vazio");
             return;
         }
 
         EditText number = (EditText) findViewById(R.id.txtContactNumber);
+        String numberTxt = number.getText().toString();
 
-        if(number.getText().toString().trim().isEmpty()){
+        if(numberTxt.trim().isEmpty() || numberTxt.equalsIgnoreCase("Número")){
             number.setError("Campo não pode ser vazio");
             return;
         }
