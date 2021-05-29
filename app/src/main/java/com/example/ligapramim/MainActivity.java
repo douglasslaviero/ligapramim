@@ -13,12 +13,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.ligapramim.banco.BDSQLiteHelper;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -28,17 +33,22 @@ import java.util.List;
 
 //import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContactAdapter.OnContactListener {
 
+    private final int REQUEST_PHONE_CALL = 4;
     private final int PERMISSION_REQUEST = 2;
-    private final List<Contact> contactsList = new ArrayList<>();
-    private final ContactAdapter adapter = new ContactAdapter(contactsList);
+    ArrayList<Contact> contactsList;
+    private final ContactAdapter adapter = new ContactAdapter(contactsList, this);
     private RecyclerView recyclerView;
+    private BDSQLiteHelper bd;
+    Contact deletedContact = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        bd = new BDSQLiteHelper(this);
 
         // Pede permissão para acessar as mídias gravadas no dispositivo
         if (ContextCompat.checkSelfPermission(this,
@@ -50,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         PERMISSION_REQUEST);
             }
+        }
+
+        // Pede permissão para fazer ligações
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
         }
 
         // Pede permissão para escrever arquivos no dispositivo
@@ -78,11 +93,6 @@ public class MainActivity extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        contactsList.add(new Contact("Joao", Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888), 123456));
-        contactsList.add(new Contact("Mario", Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888), 123456));
-        contactsList.add(new Contact("Maria", Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888), 123456));
-        contactsList.add(new Contact("Julia", Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888), 123456));
-        contactsList.add(new Contact("Carlao", Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888), 123456));
 
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -91,7 +101,16 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    Contact deletedContact = null;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        contactsList = bd.getAllContacts();
+
+        RecyclerView recyclerView =  findViewById(R.id.recyclerview);
+        ContactAdapter adapter = new ContactAdapter(contactsList, this);
+        recyclerView.setAdapter(adapter);
+
+    }
 
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
         @Override
@@ -117,8 +136,16 @@ public class MainActivity extends AppCompatActivity {
                                     adapter.notifyItemInserted(position);
                                 }
                             }).show();
+                    bd.deleteContact(deletedContact);
                     break;
             }
         }
     };
+
+    @Override
+    public void onContactClick(int position) {
+        Intent intent = new Intent(MainActivity.this, CallMakerActivity.class);
+        intent.putExtra("ID", contactsList.get(position).getId());
+        startActivity(intent);
+    }
 }

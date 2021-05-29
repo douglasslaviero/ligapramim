@@ -8,20 +8,24 @@ public class Contact implements Serializable {
 
     private String name;
     private Bitmap photo;
-    private int phoneNumber;
+    private String phoneNumber;
+    private int id;
 
-    public Contact(String name, Bitmap photo, int phoneNumber ){
+    public Contact(){
+    }
+
+    public Contact(String name, Bitmap photo, String phoneNumber ){
         this.name = name;
         this.photo = photo;
         this.phoneNumber = phoneNumber;
     }
 
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -39,5 +43,13 @@ public class Contact implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

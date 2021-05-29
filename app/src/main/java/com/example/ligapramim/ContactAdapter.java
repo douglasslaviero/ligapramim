@@ -14,15 +14,17 @@ import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
     private List<Contact> contatos;
-    public ContactAdapter(List<Contact> contatos) {
+    private  OnContactListener onContactListener;
+    public ContactAdapter(List<Contact> contatos,  OnContactListener onContactListener) {
         this.contatos = contatos;
+        this.onContactListener = onContactListener;
     }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view =
                 LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_layout,viewGroup,false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, onContactListener);
     }
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position)
@@ -38,9 +40,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         private TextView txtContactName;
         private ImageView contactImageView;
         private TextView txtTitulo;
-        public ViewHolder(@NonNull View itemView) {
+        OnContactListener onContactListener;
+        public ViewHolder(@NonNull View itemView,  OnContactListener onContactListener) {
             super(itemView);
             itemView.setOnClickListener(this);
+            this.onContactListener = onContactListener;
             contactImageView = itemView.findViewById(R.id.contactImageView);
             txtContactName = itemView.findViewById(R.id.txtContactName);
         }
@@ -49,10 +53,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             contactImageView.setImageBitmap(contato.getPhoto());
         }
         public void onClick(View view) {
-            Toast.makeText(view.getContext(),"Você selecionou "
-                    +
-                    contatos.get(getLayoutPosition()).getName(),Toast.LENGTH_LONG).
-                    show();
+            onContactListener.onContactClick(getAdapterPosition());
         }
+    }
+
+    public interface OnContactListener{
+        void onContactClick(int position);
     }
 }

@@ -15,6 +15,8 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.example.ligapramim.banco.BDSQLiteHelper;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -24,14 +26,18 @@ public class ContactActivity extends AppCompatActivity {
 
     private final int GALERY_IMAGES = 1;
     private final int PERMISSION_REQUEST = 2;
+    private final int REQUEST_PHONE_CALL = 4;
     private final int PHOTO = 3;
 
     private File photoFile = null;
+    private BDSQLiteHelper bd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+        bd = new BDSQLiteHelper(this);
 
         final EditText name = (EditText) findViewById(R.id.txtContactName);
         name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -107,7 +113,7 @@ public class ContactActivity extends AppCompatActivity {
     }
 
     public void save(View view){
-        EditText name = (EditText) findViewById(R.id.txtContactName);
+        EditText name = findViewById(R.id.txtContactName);
         String nameTxt = name.getText().toString();
 
         if(nameTxt.trim().isEmpty() || nameTxt.equalsIgnoreCase("Nome")){
@@ -115,16 +121,19 @@ public class ContactActivity extends AppCompatActivity {
             return;
         }
 
-        EditText number = (EditText) findViewById(R.id.txtContactNumber);
+        EditText number = findViewById(R.id.txtContactNumber);
         String numberTxt = number.getText().toString();
 
         if(numberTxt.trim().isEmpty() || numberTxt.equalsIgnoreCase("Número")){
             number.setError("Campo não pode ser vazio");
             return;
         }
-        /*
-        here goes the code to save on data base
-         */
+
+
+        Contact contact = new Contact();
+        contact.setName(nameTxt);
+        contact.setPhoneNumber(numberTxt);
+        bd.addContact(contact);
 
         returnToMainActivity();
     }
