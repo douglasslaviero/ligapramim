@@ -19,6 +19,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         this.contatos = contatos;
         this.onContactListener = onContactListener;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -26,15 +27,18 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_layout,viewGroup,false);
         return new ViewHolder(view, onContactListener);
     }
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position)
     {
         viewHolder.setData(contatos.get(position));
     }
+
     @Override
     public int getItemCount() {
         return contatos.size();
     }
+
     class ViewHolder extends RecyclerView.ViewHolder implements
             View.OnClickListener {
         private TextView txtContactName;

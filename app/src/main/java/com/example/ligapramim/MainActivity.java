@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
     @Override
     protected void onStart() {
         super.onStart();
+        //bd.onUpgrade(bd.getWritableDatabase(), 0, 0);
         contactsList = bd.getAllContacts();
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);

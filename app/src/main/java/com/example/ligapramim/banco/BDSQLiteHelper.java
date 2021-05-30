@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.example.ligapramim.Contact;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 
@@ -17,10 +19,13 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "ContactDb";
     private static final String CONTACT_TABLE = "contacts";
+
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String PHONE = "phone";
-    private static final String[] COLUNAS = {ID, NAME, PHONE};
+    private static final String IMAGE = "photo";
+
+    private static final String[] COLUNAS = { ID, NAME, PHONE, IMAGE };
 
     public BDSQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -32,7 +37,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                 "name TEXT,"+
                 "phone INTEGER,"+
-                "photo IMAGE)";
+                "photo BLOB)";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -47,6 +52,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(NAME, contact.getName());
         values.put(PHONE, contact.getPhoneNumber());
+        values.put(IMAGE, getImageBytes(contact.getPhoto()));
         db.insert(CONTACT_TABLE, null, values);
         db.close();
     }
@@ -70,11 +76,22 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
+    private byte[] getImageBytes(Bitmap bitmap){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        return stream.toByteArray();
+    }
+
+    private Bitmap getImageBitmap(byte[] image){
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
     private Contact cursorToContact(Cursor cursor) {
         Contact contact = new Contact();
         contact.setId(Integer.parseInt(cursor.getString(0)));
         contact.setName(cursor.getString(1));
         contact.setPhoneNumber(cursor.getString(2));
+        contact.setPhoto(getImageBitmap(cursor.getBlob(3)));
         return contact;
     }
 

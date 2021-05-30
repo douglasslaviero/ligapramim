@@ -147,6 +147,7 @@ public class ContactActivity extends AppCompatActivity {
 
         contact.setName(nameTxt);
         contact.setPhoneNumber(numberTxt);
+        contact.setPhoto(BitmapFactory.decodeFile(photoFile.getAbsolutePath()));
 
         if (update)
             bd.updateContact(contact);
