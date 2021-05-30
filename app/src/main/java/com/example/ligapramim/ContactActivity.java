@@ -1,6 +1,7 @@
 package com.example.ligapramim;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -24,9 +26,8 @@ import java.util.Date;
 public class ContactActivity extends AppCompatActivity {
 
     private final int GALERY_IMAGES = 1;
-    private final int PERMISSION_REQUEST = 2;
-    private final int REQUEST_PHONE_CALL = 4;
     private final int PHOTO = 3;
+
     private Contact contact;
     private boolean update = false;
 
@@ -43,7 +44,7 @@ public class ContactActivity extends AppCompatActivity {
         final int id = intent.getIntExtra("ID", 0);
         final EditText number = findViewById(R.id.txtContactNumber);
         final EditText name = findViewById(R.id.txtContactName);
-        final ImageButton photoBtn = findViewById(R.id.photoBtn);
+        final ImageView photoBtn = findViewById(R.id.photoView);
 
         bd = new BDSQLiteHelper(this);
 
@@ -88,11 +89,23 @@ public class ContactActivity extends AppCompatActivity {
 
             showPhoto(photoFile.getAbsolutePath());
         }
+        else if (resultCode == RESULT_OK && requestCode == GALERY_IMAGES) {
+            Uri selectedImage = data.getData();
+            String[] filePath = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePath, null,
+                    null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePath[0]);
+            String picturePath = c.getString(columnIndex);
+            c.close();
+            photoFile = new File(picturePath);
+            showPhoto(photoFile.getAbsolutePath());
+        }
     }
 
     private void showPhoto(String path) {
         Bitmap bitmap = BitmapFactory.decodeFile(path);
-        ImageButton ib = findViewById(R.id.photoBtn);
+        ImageView ib = findViewById(R.id.photoView);
         ib.setImageBitmap(bitmap);
     }
 
@@ -126,6 +139,13 @@ public class ContactActivity extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, PHOTO);
             }
         }
+    }
+
+    public void loadImage(View view) {
+
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALERY_IMAGES);
     }
 
     public void save(View view) {

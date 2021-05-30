@@ -14,14 +14,13 @@
             android:layout_height="150dp"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/photoBtn"
+            <ImageView
+                android:id="@+id/photoView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:layout_weight="2"
                 android:scaleType="fitXY"
-                android:onClick="takeASelfie"
                 android:padding="5dp"
                 android:background="#808080"/>
 
@@ -47,6 +46,31 @@
                     android:inputType="phone"
                     android:text="Número"/>
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginHorizontal="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/takePhotoBtn"
+                android:layout_margin="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="takeASelfie"
+                android:text="Tirar foto"/>
+
+            <Button
+                android:id="@+id/loadPhotoBtn"
+                android:layout_margin="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="loadImage"
+                android:text="Carregar foto"/>
         </LinearLayout>
 
         <LinearLayout
