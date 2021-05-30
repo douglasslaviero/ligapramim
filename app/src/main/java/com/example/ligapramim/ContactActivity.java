@@ -31,6 +31,7 @@ public class ContactActivity extends AppCompatActivity {
     private boolean update = false;
 
     private File photoFile = null;
+    private Bitmap photoBitmap = null;
     private BDSQLiteHelper bd;
 
     @Override
@@ -54,7 +55,10 @@ public class ContactActivity extends AppCompatActivity {
             name.setText(contact.getName());
             number.setText(contact.getPhoneNumber());
             observation.setText(contact.getObservation());
-            photoBtn.setImageBitmap(contact.getPhoto());
+
+            photoBitmap = contact.getPhoto();
+            photoBtn.setImageBitmap(photoBitmap);
+
             update = true;
         } else {
             contact = new Contact();
@@ -114,9 +118,9 @@ public class ContactActivity extends AppCompatActivity {
     }
 
     private void showPhoto(String path) {
-        Bitmap bitmap = BitmapFactory.decodeFile(path);
+        photoBitmap = BitmapFactory.decodeFile(path);
         ImageView ib = findViewById(R.id.photoView);
-        ib.setImageBitmap(bitmap);
+        ib.setImageBitmap(photoBitmap);
     }
 
     private File createFile() throws IOException {
@@ -185,7 +189,10 @@ public class ContactActivity extends AppCompatActivity {
         contact.setName(nameTxt);
         contact.setPhoneNumber(numberTxt);
         contact.setObservation(observationTxt);
-        contact.setPhoto(BitmapFactory.decodeFile(photoFile.getAbsolutePath()));
+
+        if(photoBitmap != null){
+            contact.setPhoto(photoBitmap);
+        }
 
         if (update)
             bd.updateContact(contact);
