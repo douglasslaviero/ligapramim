@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 

@@ -7,11 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -43,8 +41,9 @@ public class ContactActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         final int id = intent.getIntExtra("ID", 0);
-        final EditText number = (EditText) findViewById(R.id.txtContactNumber);
-        final EditText name = (EditText) findViewById(R.id.txtContactName);
+        final EditText number = findViewById(R.id.txtContactNumber);
+        final EditText name = findViewById(R.id.txtContactName);
+        final ImageButton photoBtn = findViewById(R.id.photoBtn);
 
         bd = new BDSQLiteHelper(this);
 
@@ -53,6 +52,7 @@ public class ContactActivity extends AppCompatActivity {
             contact = bd.getContact(id);
             name.setText(contact.getName());
             number.setText(contact.getPhoneNumber());
+            photoBtn.setImageBitmap(contact.getPhoto());
             update = true;
         } else {
             contact = new Contact();

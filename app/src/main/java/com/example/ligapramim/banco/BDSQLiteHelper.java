@@ -114,6 +114,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(NAME, contact.getName());
         values.put(PHONE, contact.getPhoneNumber());
+        values.put(IMAGE, getImageBytes(contact.getPhoto()));
         int i = db.update(CONTACT_TABLE, //tabela
                 values, // valores
                 ID+" = ?", // colunas para comparar

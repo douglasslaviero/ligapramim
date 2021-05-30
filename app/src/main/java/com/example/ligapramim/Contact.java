@@ -20,7 +20,6 @@ public class Contact implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
