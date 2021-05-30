@@ -47,6 +47,14 @@
             </LinearLayout>
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/txtContactObservation"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:text="Observação"/>
+
         <LinearLayout
             android:layout_marginHorizontal="5dp"
             android:layout_width="match_parent"

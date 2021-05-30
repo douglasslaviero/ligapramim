@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +43,7 @@ public class ContactActivity extends AppCompatActivity {
         final int id = intent.getIntExtra("ID", 0);
         final EditText number = findViewById(R.id.txtContactNumber);
         final EditText name = findViewById(R.id.txtContactName);
+        final EditText observation = findViewById(R.id.txtContactObservation);
         final ImageView photoBtn = findViewById(R.id.photoView);
 
         bd = new BDSQLiteHelper(this);
@@ -53,6 +53,7 @@ public class ContactActivity extends AppCompatActivity {
             contact = bd.getContact(id);
             name.setText(contact.getName());
             number.setText(contact.getPhoneNumber());
+            observation.setText(contact.getObservation());
             photoBtn.setImageBitmap(contact.getPhoto());
             update = true;
         } else {
@@ -71,6 +72,15 @@ public class ContactActivity extends AppCompatActivity {
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
                         number.setText("");
+                    }
+                }
+            });
+
+            observation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        observation.setText("");
                     }
                 }
             });
@@ -165,8 +175,16 @@ public class ContactActivity extends AppCompatActivity {
             return;
         }
 
+        EditText observation = findViewById(R.id.txtContactObservation);
+        String observationTxt = observation.getText().toString();
+
+        if (observationTxt.equalsIgnoreCase("Observação")) {
+            observationTxt = "";
+        }
+
         contact.setName(nameTxt);
         contact.setPhoneNumber(numberTxt);
+        contact.setObservation(observationTxt);
         contact.setPhoto(BitmapFactory.decodeFile(photoFile.getAbsolutePath()));
 
         if (update)

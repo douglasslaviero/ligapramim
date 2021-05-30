@@ -9,15 +9,17 @@ public class Contact implements Serializable {
     private String name;
     private Bitmap photo;
     private String phoneNumber;
+    private String observation;
     private int id;
 
     public Contact(){
     }
 
-    public Contact(String name, Bitmap photo, String phoneNumber ){
+    public Contact(String name, Bitmap photo, String phoneNumber, String observation ){
         this.name = name;
         this.photo = photo;
         this.phoneNumber = phoneNumber;
+        this.observation = observation;
     }
 
     public String getPhoneNumber() {
@@ -51,4 +53,8 @@ public class Contact implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+
+    public String getObservation() { return observation; }
+
+    public void setObservation(String observation) { this.observation = observation; }
 }

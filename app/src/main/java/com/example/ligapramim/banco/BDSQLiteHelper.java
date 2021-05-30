@@ -23,9 +23,10 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String PHONE = "phone";
+    private static final String OBSERVATION = "observation";
     private static final String IMAGE = "photo";
 
-    private static final String[] COLUNAS = { ID, NAME, PHONE, IMAGE };
+    private static final String[] COLUNAS = { ID, NAME, PHONE, OBSERVATION, IMAGE };
 
     public BDSQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,6 +38,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                 "name TEXT,"+
                 "phone INTEGER,"+
+                "observation TEXT,"+
                 "photo BLOB)";
         db.execSQL(CREATE_TABLE);
     }
@@ -52,6 +54,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(NAME, contact.getName());
         values.put(PHONE, contact.getPhoneNumber());
+        values.put(OBSERVATION, contact.getObservation());
         values.put(IMAGE, getImageBytes(contact.getPhoto()));
         db.insert(CONTACT_TABLE, null, values);
         db.close();
@@ -91,7 +94,8 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
         contact.setId(Integer.parseInt(cursor.getString(0)));
         contact.setName(cursor.getString(1));
         contact.setPhoneNumber(cursor.getString(2));
-        contact.setPhoto(getImageBitmap(cursor.getBlob(3)));
+        contact.setObservation(cursor.getString(3));
+        contact.setPhoto(getImageBitmap(cursor.getBlob(4)));
         return contact;
     }
 
@@ -114,6 +118,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(NAME, contact.getName());
         values.put(PHONE, contact.getPhoneNumber());
+        values.put(OBSERVATION, contact.getObservation());
         values.put(IMAGE, getImageBytes(contact.getPhoto()));
         int i = db.update(CONTACT_TABLE, //tabela
                 values, // valores

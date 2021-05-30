@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ligapramim.banco.BDSQLiteHelper;
 
+import org.w3c.dom.Text;
+
 public class CallMakerActivity extends AppCompatActivity {
     private BDSQLiteHelper bd;
 
@@ -27,10 +29,12 @@ public class CallMakerActivity extends AppCompatActivity {
 
         final TextView name =  findViewById(R.id.txtContactName);
         final TextView number = findViewById(R.id.txtContactNumber);
+        final TextView observation = findViewById(R.id.txtContactObservation);
         final ImageView photoBtn = findViewById(R.id.photoBtn);
 
         name.setText(contact.getName());
         number.setText(contact.getPhoneNumber());
+        observation.setText(contact.getObservation());
         photoBtn.setImageBitmap(contact.getPhoto());
     }
 
