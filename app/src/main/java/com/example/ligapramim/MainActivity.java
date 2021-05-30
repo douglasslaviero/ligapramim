@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
 
         // Pede permissão para fazer ligações
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
         }
 
         // Pede permissão para escrever arquivos no dispositivo
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
         super.onStart();
         contactsList = bd.getAllContacts();
 
-        RecyclerView recyclerView =  findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
         ContactAdapter adapter = new ContactAdapter(contactsList, this);
         recyclerView.setAdapter(adapter);
 
@@ -123,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
             int position = viewHolder.getAdapterPosition();
             switch (direction) {
                 case ItemTouchHelper.LEFT:
+                    Intent intent = new Intent(MainActivity.this, ContactActivity.class);
+                    intent.putExtra("ID", contactsList.get(position).getId());
+                    startActivity(intent);
                     break;
                 case ItemTouchHelper.RIGHT:
                     deletedContact = contactsList.get(position);
@@ -139,6 +143,16 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
                     bd.deleteContact(deletedContact);
                     break;
             }
+        }
+
+        int trashBinIcon = R.drawable.ic_baseline_delete_24;
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            c.clipRect(dX, viewHolder.itemView.getTop(), 0f, viewHolder.itemView.getBottom());
+            c.drawColor(Color.RED);
         }
     };
 
