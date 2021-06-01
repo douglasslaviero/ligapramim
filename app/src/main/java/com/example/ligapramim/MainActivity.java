@@ -1,6 +1,7 @@
 package com.example.ligapramim;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -18,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ligapramim.banco.BDSQLiteHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -121,40 +122,50 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
                     startActivity(intent);
                     break;
                 case ItemTouchHelper.RIGHT:
-                    deletedContact = contactsList.get(position);
-                    contactsList.remove(position);
-                    adapter.notifyItemRemoved(position);
-                    Snackbar.make(recyclerView, deletedContact.getName(), Snackbar.LENGTH_LONG)
-                            .setAction("Undo", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    contactsList.add(position, deletedContact);
-                                    adapter.notifyItemInserted(position);
-                                }
-                            }).show();
-                    bd.deleteContact(deletedContact);
-                    startActivity(getIntent());
+                    delete(position);
                     break;
             }
         }
-
-        int trashBinIcon = R.drawable.ic_baseline_delete_24;
 
         @Override
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
                                 float dX, float dY, int actionState, boolean isCurrentlyActive) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 
-            if(dX > 0){
+            if (dX > 0) {
                 c.clipRect(dX, viewHolder.itemView.getTop(), 0f, viewHolder.itemView.getBottom());
                 c.drawColor(Color.RED);
-            }
-            else{
+            } else {
                 c.clipRect(viewHolder.itemView.getRight() + dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom());
                 c.drawColor(Color.BLUE);
             }
         }
     };
+
+    private void delete(int position) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        deletedContact = contactsList.get(position);
+                        contactsList.remove(position);
+                        adapter.notifyItemRemoved(position);
+                        bd.deleteContact(deletedContact);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+                startActivity(getIntent());
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("Tem certeza que deseja deletar?").setPositiveButton("SIM", dialogClickListener)
+                .setNegativeButton("NÃO", dialogClickListener).
+
+                show();
+    }
 
     @Override
     public void onContactClick(int position) {
