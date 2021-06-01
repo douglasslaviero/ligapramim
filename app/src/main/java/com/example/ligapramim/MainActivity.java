@@ -1,5 +1,13 @@
 package com.example.ligapramim;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -8,31 +16,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.View;
-
 import com.example.ligapramim.banco.BDSQLiteHelper;
-import com.google.android.material.snackbar.Snackbar;
-
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.List;
 
 //import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
@@ -42,9 +30,9 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
     private final int PERMISSION_REQUEST = 2;
     ArrayList<Contact> contactsList;
     private final ContactAdapter adapter = new ContactAdapter(contactsList, this);
+    private RecyclerView recyclerView;
     private BDSQLiteHelper bd;
-    private Contact deletedContact;
-    SwipeController swipeController = null;
+    Contact deletedContact = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +79,7 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
             }
         });
 
-        contactsList = bd.getAllContacts();
-
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -101,29 +87,8 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        swipeController = new SwipeController(new SwipeControllerActions() {
-            @Override
-            public void onLeftClicked(int position) {
-                delete(position, recyclerView);
-            }
-
-            @Override
-            public void onRightClicked(int position) {
-                Intent intent = new Intent(MainActivity.this, ContactActivity.class);
-                intent.putExtra("ID", contactsList.get(position).getId());
-                startActivity(intent);
-            }
-        });
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
     }
 
     @Override
@@ -138,95 +103,63 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
 
     }
 
-//    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-//        @Override
-//        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-//            return false;
-//        }
-//
-//        @Override
-//        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-//            int position = viewHolder.getAdapterPosition();
-//            switch (direction) {
-//                case ItemTouchHelper.LEFT:
-//                    Intent intent = new Intent(MainActivity.this, ContactActivity.class);
-//                    intent.putExtra("ID", contactsList.get(position).getId());
-//                    startActivity(intent);
-//                    break;
-//                case ItemTouchHelper.RIGHT:
-//                    if (confirmDelete()) {
-//                        deletedContact = contactsList.get(position);
-//                        contactsList.remove(position);
-//                        adapter.notifyItemRemoved(position);
-//                        Snackbar.make(recyclerView, deletedContact.getName(), Snackbar.LENGTH_LONG)
-//                                .setAction("Undo", new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View v) {
-//                                        contactsList.add(position, deletedContact);
-//                                        adapter.notifyItemInserted(position);
-//                                    }
-//                                }).show();
-//                        bd.deleteContact(deletedContact);
-//                    }
-//                    break;
-//            }
-//        }
-//
-//        int trashBinIcon = R.drawable.ic_baseline_delete_24;
-//
-//        @Override
-//        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
-//                                float dX, float dY, int actionState, boolean isCurrentlyActive) {
-//            int pos = viewHolder.getAdapterPosition();
-//            View itemView = viewHolder.itemView;
-//
-//            c.clipRect(0f, viewHolder.itemView.getTop(), dX, viewHolder.itemView.getBottom());
-//            if (pos < 0)
-//                c.drawColor(Color.RED);
-//            else
-//                c.drawColor(Color.BLUE);
-//
-//            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//        }
-//    };
+    int direction = 0;
+
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            switch (direction) {
+                case ItemTouchHelper.LEFT:
+                    Intent intent = new Intent(MainActivity.this, ContactActivity.class);
+                    intent.putExtra("ID", contactsList.get(position).getId());
+                    startActivity(intent);
+                    break;
+                case ItemTouchHelper.RIGHT:
+                    deletedContact = contactsList.get(position);
+                    contactsList.remove(position);
+                    adapter.notifyItemRemoved(position);
+                    Snackbar.make(recyclerView, deletedContact.getName(), Snackbar.LENGTH_LONG)
+                            .setAction("Undo", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    contactsList.add(position, deletedContact);
+                                    adapter.notifyItemInserted(position);
+                                }
+                            }).show();
+                    bd.deleteContact(deletedContact);
+                    startActivity(getIntent());
+                    break;
+            }
+        }
+
+        int trashBinIcon = R.drawable.ic_baseline_delete_24;
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+            if(dX > 0){
+                c.clipRect(dX, viewHolder.itemView.getTop(), 0f, viewHolder.itemView.getBottom());
+                c.drawColor(Color.RED);
+            }
+            else{
+                c.clipRect(viewHolder.itemView.getRight() + dX, viewHolder.itemView.getTop(), viewHolder.itemView.getRight(), viewHolder.itemView.getBottom());
+                c.drawColor(Color.BLUE);
+            }
+        }
+    };
 
     @Override
     public void onContactClick(int position) {
         Intent intent = new Intent(MainActivity.this, CallMakerActivity.class);
         intent.putExtra("ID", contactsList.get(position).getId());
         startActivity(intent);
-    }
-
-    private void delete(int position, RecyclerView recyclerView) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        deletedContact = contactsList.get(position);
-                        contactsList.remove(position);
-                        adapter.notifyItemRemoved(position);
-                        Snackbar.make(recyclerView, deletedContact.getName(), Snackbar.LENGTH_LONG)
-                                .setAction("Undo", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        contactsList.add(position, deletedContact);
-                                        bd.addContact(deletedContact);
-                                        adapter.notifyItemInserted(position);
-                                    }
-                                }).show();
-                        bd.deleteContact(deletedContact);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage("Tem certeza que deseja deletar?").setPositiveButton("SIM", dialogClickListener)
-                .setNegativeButton("NÃO", dialogClickListener).
-
-                show();
     }
 }
