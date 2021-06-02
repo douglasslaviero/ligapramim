@@ -173,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements ContactAdapter.On
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
                 }
+                
+                finish();
                 startActivity(getIntent());
             }
         };

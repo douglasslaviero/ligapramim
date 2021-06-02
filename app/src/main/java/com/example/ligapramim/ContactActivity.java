@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -120,6 +123,7 @@ public class ContactActivity extends AppCompatActivity {
     private void showPhoto(String path) {
         photoBitmap = BitmapFactory.decodeFile(path);
         ImageView ib = findViewById(R.id.photoView);
+        ib.setBackgroundColor(Color.GRAY);
         ib.setImageBitmap(photoBitmap);
     }
 
@@ -190,7 +194,14 @@ public class ContactActivity extends AppCompatActivity {
         contact.setPhoneNumber(numberTxt);
         contact.setObservation(observationTxt);
 
-        if(photoBitmap != null){
+        ImageView imageView = findViewById(R.id.photoView);
+
+        if(photoBitmap == null){
+            imageView.setBackgroundColor(Color.RED);
+            //AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            //builder.setMessage("É preciso tirar ou carregar uma foto.");
+            return;
+        } else {
             contact.setPhoto(photoBitmap);
         }
 
